@@ -1,0 +1,7 @@
+{
+  "type": "mongodb",
+  "host": "localhost",
+  "database": "satdb",
+  "entities": ["src/**/**.entity{.ts,.js}"],
+  "synchronize": true
+}
