@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from './project.entity';
-import { MongoRepository, Repository } from 'typeorm';
+import { MongoRepository, ObjectID, Repository } from 'typeorm';
 
 @Injectable()
 export class ProjectService {
@@ -16,5 +16,9 @@ export class ProjectService {
 
   async create(project: Project) {
     return await this.projectRepository.insertOne(project);
+  }
+
+  async findOne(id: ObjectID) {
+    return await this.projectRepository.findOne(id);
   }
 }

@@ -5,8 +5,7 @@ import { Project } from './project.entity';
 @Controller('projects')
 export class ProjectController {
 
-  constructor(private projectService: ProjectService) {
-  }
+  constructor(private projectService: ProjectService) {}
 
   @Post()
   async create(@Body() body) {
@@ -25,7 +24,7 @@ export class ProjectController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id) {
-    return `This action returns a #${id} project`;
+  async findOne(@Param('id') id) {
+    return await this.projectService.findOne(id);
   }
 }
