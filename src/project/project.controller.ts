@@ -1,11 +1,12 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put} from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { Project } from './project.entity';
 
-@Controller('projects')
+@Controller('api/projects')
 export class ProjectController {
 
-  constructor(private projectService: ProjectService) {}
+  constructor(private projectService: ProjectService) {
+  }
 
   @Post()
   async create(@Body() body) {
@@ -15,7 +16,8 @@ export class ProjectController {
     project.modified = new Date();
 
     // TODO: handle errors
-    return await this.projectService.create(project);
+    const response = await this.projectService.create(project);
+    return { result: response.result, id: response.insertedId };
   }
 
   @Get()
@@ -26,5 +28,24 @@ export class ProjectController {
   @Get(':id')
   async findOne(@Param('id') id) {
     return await this.projectService.findOne(id);
+  }
+
+  @Put(':id')
+  async update(@Param('id') id, @Body() body) {
+    const project = await this.projectService.findOne(id);
+
+    if (body) {
+      if (project) {
+        for (const key of Object.keys(body)) {
+          project[key] = body[key];
+        }
+        return await this.projectService.update(id, project);
+      }
+    }
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id) {
+    return await this.projectService.delete(id);
   }
 }
