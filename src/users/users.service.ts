@@ -3,7 +3,9 @@ import { User } from './user.entity';
 import { MongoRepository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserModel } from './user.model';
-import { hashSync } from 'bcrypt';
+
+// import * as mongodb from 'mongodb';
+
 
 @Injectable()
 export class UsersService {
@@ -12,17 +14,29 @@ export class UsersService {
               private readonly userRepository: MongoRepository<User>) {
   }
 
-  async create(userModel: UserModel) {
-    const userEntity = new User();
+  async create(model: UserModel) {
+    const entity = new User();
 
-    userEntity.username = userModel.username;
-    userEntity.email = userModel.email;
-    userEntity.password = hashSync(userModel.password, 8); // fixme
+    entity.username = model.username;
+    entity.email = model.email;
+    entity.password = model.password;
 
-    return await this.userRepository.insertOne(userEntity);
+    return await this.userRepository.insertOne(entity);
   }
 
   async findAll() {
     return await this.userRepository.find();
+  }
+
+  async findOneByEmail(email: string) {
+    return await this.userRepository.findOne({ email });
+  }
+
+  async findOneByUsername(username: string) {
+    return await this.userRepository.findOne({ username });
+  }
+
+  async findOneById(id: string) {
+    return await this.userRepository.findOne(id);
   }
 }

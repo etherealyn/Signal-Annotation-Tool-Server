@@ -6,6 +6,7 @@ export class User {
   id: ObjectID;
 
   @Column()
+  @Index({ unique: true })
   username: string;
 
   @Column()

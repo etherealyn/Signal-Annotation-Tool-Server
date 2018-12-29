@@ -25,15 +25,14 @@ export class UsersController {
     const users = await this.usersService.findAll();
 
     users.map((user: User) => {
-      delete user.id;
       delete user.password;
     });
 
     return users;
   }
 
-  @Delete(':email')
-  async delete(@Param('email') email, @Res() res) {
+  @Delete(':id')
+  async delete(@Param('id') email, @Res() res) {
     return res.statusCode(HttpStatus.NOT_IMPLEMENTED);
   }
 }
