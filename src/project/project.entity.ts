@@ -10,6 +10,9 @@ export class Project {
   title: string;
 
   @Column()
+  userIds: string[];
+
+  @Column()
   description: string;
 
   @Column()

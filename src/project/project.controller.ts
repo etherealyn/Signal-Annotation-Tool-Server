@@ -19,6 +19,7 @@ export class ProjectController {
     project.title = body.title;
     project.description = body.description;
     project.modified = new Date();
+    project.userIds = body.userIds;
 
     // TODO: handle errors
     const response = await this.projectService.create(project);
