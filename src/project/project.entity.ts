@@ -10,7 +10,10 @@ export class Project {
   title: string;
 
   @Column()
-  userIds: string[];
+  ownerId: string;
+
+  @Column()
+  memberIds: string;
 
   @Column()
   description: string;

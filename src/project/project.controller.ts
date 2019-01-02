@@ -1,6 +1,6 @@
 import {
   Body, Controller, Param, UseGuards,
-  Delete, Get, Post, Put,
+  Delete, Get, Post, Put, Req,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { Project } from './project.entity';
@@ -14,12 +14,12 @@ export class ProjectController {
 
   @Post()
   @UseGuards(AuthGuard())
-  async create(@Body() body) {
+  async create(@Req() req, @Body() body) {
     const project = new Project();
     project.title = body.title;
     project.description = body.description;
     project.modified = new Date();
-    project.userIds = body.userIds;
+    project.ownerId = req.user.id;
 
     // TODO: handle errors
     const response = await this.projectService.create(project);
