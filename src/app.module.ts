@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MulterModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -15,6 +15,9 @@ import { AuthModule } from './auth/auth.module';
     ProjectModule,
     UsersModule,
     AuthModule,
+    MulterModule.register({
+      dest: 'uploads/',
+    }),
   ],
   controllers: [AppController, ProjectController, AuthController],
   providers: [AppService, AuthService],

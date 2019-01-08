@@ -1,10 +1,10 @@
-import {
-  Body, Controller, Param, UseGuards,
-  Delete, Get, Post, Put, Req,
-} from '@nestjs/common';
+import { Body, Controller, Delete, FilesInterceptor, Get, Param, Post, Put, Req, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { Project } from './project.entity';
 import { AuthGuard } from '@nestjs/passport';
+import { Directory } from './directory.entity';
+import { FileUpload } from './file.upload';
+import { File } from './file.entity';
 
 @Controller('api/projects')
 export class ProjectController {
@@ -21,9 +21,33 @@ export class ProjectController {
     project.modified = new Date();
     project.ownerId = req.user.id;
 
+    project.root = new Directory();
+    project.root.parent = null;
+    project.root.children = [];
+
     // TODO: handle errors
     const response = await this.projectService.create(project);
     return { result: response.result, id: response.insertedId };
+  }
+
+  @Post('upload/:id')
+  @UseInterceptors(FilesInterceptor('file'))
+  async uploadFile(@Param('id') id, @UploadedFiles() uploads: FileUpload[]) {
+
+    const project = await this.projectService.findOne(id);
+
+
+    uploads.forEach((upload: FileUpload) => {
+      const file = new File();
+      file.name = upload.originalname;
+      file.path = upload.path;
+      file.size = upload.size;
+
+      project.root.children.push(file);
+    });
+
+
+    return await this.projectService.update(project.id.toHexString(), project);
   }
 
   @Get()

@@ -1,4 +1,5 @@
-import {Column, Entity, ObjectID, ObjectIdColumn} from 'typeorm';
+import { Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm';
+import { Directory } from './directory.entity';
 
 @Entity()
 export class Project {
@@ -20,4 +21,7 @@ export class Project {
 
   @Column()
   modified: Date;
+
+  @Column()
+  root: Directory;
 }

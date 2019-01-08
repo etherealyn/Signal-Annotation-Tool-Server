@@ -18,15 +18,15 @@ export class ProjectService {
     return await this.projectRepository.insertOne(project);
   }
 
-  async findOne(id: ObjectID) {
+  async findOne(id: string) {
     return await this.projectRepository.findOne(id);
   }
 
-  async update(id: ObjectID, project: Project) {
+  async update(id: string, project: Project) {
     return await this.projectRepository.update(id, project);
   }
 
-  async delete(id: ObjectID) {
+  async delete(id: string) {
     return await this.projectRepository.delete(id);
   }
 }

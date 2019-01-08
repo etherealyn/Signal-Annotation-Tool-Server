@@ -91,7 +91,7 @@ cmake-build-release/
 # Mongo Explorer plugin
 .idea/**/mongoSettings.xml
 
-# File-based project format
+# FileUpload-based project format
 *.iws
 
 # IntelliJ
@@ -116,3 +116,6 @@ fabric.properties
 .idea/httpRequests
 .idea
 dist
+
+# Uploads
+uploads
