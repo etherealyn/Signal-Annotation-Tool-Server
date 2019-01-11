@@ -23,5 +23,5 @@ export class Project {
   modified: Date;
 
   @Column()
-  root: Directory;
+  fileTree: Directory;
 }

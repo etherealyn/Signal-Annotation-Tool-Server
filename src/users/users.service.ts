@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { User } from './user.entity';
-import { MongoRepository } from 'typeorm';
+import { User } from '../entities/user.entity';
+import { FindOneOptions, MongoRepository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserModel } from './user.model';
 
@@ -29,11 +29,11 @@ export class UsersService {
   }
 
   async findOneByEmail(email: string) {
-    return await this.userRepository.findOne({ email });
+    return await this.userRepository.findOne(email);
   }
 
   async findOneByUsername(username: string) {
-    return await this.userRepository.findOne({ username });
+    return await this.userRepository.findOne(username);
   }
 
   async findOneById(id: string) {

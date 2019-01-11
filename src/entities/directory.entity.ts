@@ -5,9 +5,12 @@ import { File } from './file.entity';
 @Tree('closure-table')
 export class Directory extends File {
 
-  @TreeChildren()
-  children: File[];
-
+  /**
+   * root if undefined
+   */
   @TreeParent()
   parent: Directory[];
+
+  @TreeChildren()
+  children: File[];
 }

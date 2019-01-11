@@ -38,7 +38,7 @@ build/Release
 node_modules/
 jspm_packages/
 
-# TypeScript v1 declaration files
+# TypeScript v1 declaration children
 typings/
 
 # Optional npm cache directory
@@ -71,7 +71,7 @@ typings/
 .idea/**/dictionaries
 .idea/**/shelf
 
-# Sensitive or high-churn files
+# Sensitive or high-churn children
 .idea/**/dataSources/
 .idea/**/dataSources.ids
 .idea/**/dataSources.local.xml

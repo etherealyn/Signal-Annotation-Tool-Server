@@ -1,10 +1,20 @@
 import { Body, Controller, Delete, FilesInterceptor, Get, Param, Post, Put, Req, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ProjectService } from './project.service';
-import { Project } from './project.entity';
+import { Project } from '../entities/project.entity';
 import { AuthGuard } from '@nestjs/passport';
-import { Directory } from './directory.entity';
-import { FileUpload } from './file.upload';
-import { File } from './file.entity';
+import { Directory } from '../entities/directory.entity';
+import { File } from '../entities/file.entity';
+
+interface FileUpload {
+  readonly fieldname: string;
+  readonly originalname: string;
+  readonly encoding: string;
+  readonly mimetype: string;
+  readonly destination: string;
+  readonly filename: string;
+  readonly path: string;
+  readonly size: number;
+}
 
 @Controller('api/projects')
 export class ProjectController {
@@ -21,9 +31,9 @@ export class ProjectController {
     project.modified = new Date();
     project.ownerId = req.user.id;
 
-    project.root = new Directory();
-    project.root.parent = null;
-    project.root.children = [];
+    project.fileTree = new Directory();
+    project.fileTree.parent = null;
+    project.fileTree.children = [];
 
     // TODO: handle errors
     const response = await this.projectService.create(project);
@@ -36,30 +46,36 @@ export class ProjectController {
 
     const project = await this.projectService.findOne(id);
 
-
     uploads.forEach((upload: FileUpload) => {
       const file = new File();
       file.name = upload.originalname;
       file.path = upload.path;
       file.size = upload.size;
+      file.mimetype = upload.mimetype;
 
-      project.root.children.push(file);
+      project.fileTree.children.push(file);
     });
-
-
     return await this.projectService.update(project.id.toHexString(), project);
   }
 
   @Get()
   @UseGuards(AuthGuard())
   async findAll(): Promise<Project[]> {
-    return await this.projectService.findAll();
+    const fields:(keyof Project)[] = ['id', 'title', 'modified',
+      'memberIds', 'ownerId', 'description', ];
+    return await this.projectService.findAll(fields);
   }
 
   @Get(':id')
   @UseGuards(AuthGuard())
   async findOne(@Param('id') id) {
-    return await this.projectService.findOne(id);
+    const project = await this.projectService.findOne(id);
+
+    project.fileTree.children.forEach(file => {
+      delete file.path;
+    });
+
+    return project;
   }
 
   @Put(':id')

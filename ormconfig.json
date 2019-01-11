@@ -1,6 +1,7 @@
 {
   "type": "mongodb",
   "host": "localhost",
+  "port": 27017,
   "database": "satdb",
   "entities": ["src/**/**.entity{.ts,.js}"],
   "synchronize": true
