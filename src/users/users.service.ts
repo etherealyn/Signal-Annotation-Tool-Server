@@ -29,11 +29,11 @@ export class UsersService {
   }
 
   async findOneByEmail(email: string) {
-    return await this.userRepository.findOne(email);
+    return await this.userRepository.findOne({email});
   }
 
   async findOneByUsername(username: string) {
-    return await this.userRepository.findOne(username);
+    return await this.userRepository.findOne({username});
   }
 
   async findOneById(id: string) {

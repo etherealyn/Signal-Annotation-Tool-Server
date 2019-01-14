@@ -1,9 +1,26 @@
-import { Body, Controller, Delete, FilesInterceptor, Get, Param, Post, Put, Req, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  FilesInterceptor,
+  Get,
+  Param,
+  Post,
+  Put,
+  Req,
+  Res,
+  UploadedFiles,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { Project } from '../entities/project.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { Directory } from '../entities/directory.entity';
 import { File } from '../entities/file.entity';
+import { createReadStream, Stats, statSync } from 'fs';
+import { Request, Response } from 'express';
+import { OutgoingHttpHeaders } from 'http';
 
 interface FileUpload {
   readonly fieldname: string;
@@ -76,6 +93,42 @@ export class ProjectController {
     });
 
     return project;
+  }
+
+  @Get('files/:filename')
+  file(@Req() req: Request, @Res() res: Response, @Param('filename') filename: string) {
+    const path = `uploads/${filename}`;
+    const stat: Stats = statSync(path);
+    const fileSize = stat.size;
+    const range = req.headers.range;
+
+
+    if (range) {
+      console.log('DEBUG');
+      console.log(range);
+      const parts = range.replace(/bytes=/, "").split("-");
+      console.log(parts);
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+      const chunckSize = (end - start) + 1;
+      const file = createReadStream(path, {start, end});
+      const head = {
+        'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+        'Accept-Ranges': 'bytes',
+        'Content-Length': chunckSize,
+        'Content-Type': 'video/mp4', //fixme
+      };
+
+      res.writeHead(206, head);
+      file.pipe(res);
+    } else {
+      const head = {
+        'Content-Length': fileSize,
+        'Content-Type': 'video/mp4',
+      };
+      res.writeHead(200, head);
+      createReadStream(path).pipe(res);
+    }
   }
 
   @Put(':id')
