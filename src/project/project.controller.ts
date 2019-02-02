@@ -65,6 +65,7 @@ export class ProjectController {
 
     uploads.forEach((upload: FileUpload) => {
       const file = new File();
+
       file.name = upload.originalname;
       file.path = upload.path;
       file.size = upload.size;
@@ -78,8 +79,8 @@ export class ProjectController {
   @Get()
   @UseGuards(AuthGuard())
   async findAll(): Promise<Project[]> {
-    const fields:(keyof Project)[] = ['id', 'title', 'modified',
-      'memberIds', 'ownerId', 'description', ];
+    const fields: Array<keyof Project> = ['id', 'title', 'modified',
+      'memberIds', 'ownerId', 'description' ];
     return await this.projectService.findAll(fields);
   }
 
@@ -102,12 +103,8 @@ export class ProjectController {
     const fileSize = stat.size;
     const range = req.headers.range;
 
-
     if (range) {
-      console.log('DEBUG');
-      console.log(range);
-      const parts = range.replace(/bytes=/, "").split("-");
-      console.log(parts);
+      const parts = range.replace(/bytes=/, '').split('-');
       const start = parseInt(parts[0], 10);
       const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
       const chunckSize = (end - start) + 1;
@@ -116,7 +113,7 @@ export class ProjectController {
         'Content-Range': `bytes ${start}-${end}/${fileSize}`,
         'Accept-Ranges': 'bytes',
         'Content-Length': chunckSize,
-        'Content-Type': 'video/mp4', //fixme
+        'Content-Type': 'video/mp4', // fixme
       };
 
       res.writeHead(206, head);
