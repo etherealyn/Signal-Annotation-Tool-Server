@@ -9,6 +9,9 @@ export class File {
   name: string;
 
   @Column()
+  filename: string;
+
+  @Column()
   path: string;
 
   @Column()

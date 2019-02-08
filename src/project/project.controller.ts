@@ -20,7 +20,6 @@ import { Directory } from '../entities/directory.entity';
 import { File } from '../entities/file.entity';
 import { createReadStream, Stats, statSync } from 'fs';
 import { Request, Response } from 'express';
-import { OutgoingHttpHeaders } from 'http';
 
 interface FileUpload {
   readonly fieldname: string;
@@ -67,6 +66,7 @@ export class ProjectController {
       const file = new File();
 
       file.name = upload.originalname;
+      file.filename = upload.filename;
       file.path = upload.path;
       file.size = upload.size;
       file.mimetype = upload.mimetype;
