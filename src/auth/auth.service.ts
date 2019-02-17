@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './jwt.payload';
 import { UsersService } from '../users/users.service';
 import { User } from '../entities/user.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -18,18 +19,21 @@ export class AuthService {
       user = await this.usersService.findOneByEmail(username);
     }
 
-    if (user && password === user.password) { // fixme compareSync
-      const payload: JwtPayload = { id: user.id.toHexString() };
-      const accessToken = this.jwtService.sign(payload);
+    if (user) { // fixme compareSync
+      const same: boolean = await bcrypt.compare(password, user.password);
       delete user.password;
-      return {
-        accessToken,
-        user,
-        expiresIn: 3600
-      };
-    } else {
-      return { error: 'Invalid username or password' };
+
+      if (same) {
+        const payload: JwtPayload = { id: user.id.toHexString() };
+        const accessToken = this.jwtService.sign(payload);
+        return {
+          accessToken,
+          user,
+          expiresIn: 3600,
+        };
+      }
     }
+    return { error: 'Invalid username or password' };
   }
 
   async validateUser(payload: JwtPayload) {
