@@ -10,7 +10,6 @@ export class AuthController {
   @Post()
   async login(@Body() body) {
     const session = await this.authService.createToken(body.username, body.password);
-    console.log(session);
     if (session && session.error) {
       throw new ForbiddenException();
     }

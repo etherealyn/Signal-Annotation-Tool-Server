@@ -24,7 +24,9 @@ export class AuthService {
       delete user.password;
 
       if (same) {
-        const payload: JwtPayload = { id: user.id.toHexString() };
+        const payload: JwtPayload = {  // todo: what else there needs to be in the payload?
+          id: user.id.toHexString(),
+        };
         const accessToken = this.jwtService.sign(payload);
         return {
           accessToken,

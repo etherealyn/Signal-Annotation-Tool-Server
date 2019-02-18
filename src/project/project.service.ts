@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from '../entities/project.entity';
-import { FindManyOptions, FindOneOptions, MongoRepository, ObjectID, Repository } from 'typeorm';
+import { FindConditions, FindManyOptions, FindOneOptions, MongoRepository } from 'typeorm';
 
 @Injectable()
 export class ProjectService {
@@ -10,16 +10,18 @@ export class ProjectService {
     private readonly projectRepository: MongoRepository<Project>) {
   }
 
-  async findAll(fields?:(keyof Project)[]): Promise<Project[]> {
-    const options: FindManyOptions = { select: fields };
-    return await this.projectRepository.find(options);
+  async findAll(ownerId: string): Promise<Project[]> {
+    const result: Project[] = await this.projectRepository.find();
+
+    return result.filter((value => value.ownerId == ownerId)); // fixme: where clause
+    // return result;
   }
 
   async create(project: Project) {
     return await this.projectRepository.insertOne(project);
   }
 
-  async findOne(id: string, fields?:(keyof Project)[]) {
+  async findOne(id: string, fields?: Array<keyof Project>) {
     const options: FindOneOptions = { select: fields };
     return await this.projectRepository.findOne(id, options);
   }

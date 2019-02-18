@@ -14,7 +14,7 @@ export class Project {
   ownerId: string;
 
   @Column()
-  memberIds: string;
+  memberIds: string[];
 
   @Column()
   description: string;

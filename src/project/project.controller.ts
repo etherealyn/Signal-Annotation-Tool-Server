@@ -32,7 +32,7 @@ interface FileUpload {
   readonly size: number;
 }
 
-@Controller('api/projects')
+@Controller('api/project')
 export class ProjectController {
 
   constructor(private projectService: ProjectService) {
@@ -76,23 +76,19 @@ export class ProjectController {
     return await this.projectService.update(project.id.toHexString(), project);
   }
 
-  @Get()
+  @Get('all/:ownerId')
   @UseGuards(AuthGuard())
-  async findAll(): Promise<Project[]> {
-    const fields: Array<keyof Project> = ['id', 'title', 'modified',
-      'memberIds', 'ownerId', 'description' ];
-    return await this.projectService.findAll(fields);
+  async findAll(@Param('ownerId') ownerId): Promise<Project[]> {
+    return await this.projectService.findAll(ownerId);
   }
 
   @Get(':id')
   @UseGuards(AuthGuard())
   async findOne(@Param('id') id) {
     const project = await this.projectService.findOne(id);
-
     project.fileTree.children.forEach(file => {
       delete file.path;
     });
-
     return project;
   }
 
