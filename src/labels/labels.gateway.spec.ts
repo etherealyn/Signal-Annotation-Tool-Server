@@ -3,7 +3,7 @@ import { LabelsGateway } from './labels.gateway';
 
 describe('LabelsGateway', () => {
   let gateway: LabelsGateway;
-  
+
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [LabelsGateway],

@@ -13,6 +13,5 @@ export class User {
   password: string;
 
   @Column()
-  @Index({ unique: true })
   email: string;
 }

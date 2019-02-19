@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Res} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from '../entities/user.entity';
 import * as bcrypt from 'bcrypt';
@@ -13,13 +13,13 @@ export class UsersController {
 
   @Post()
   async create(@Body() userDto: UserRegistrationDto, @Res() res: Response) {
-    if (this.isValidUserDto(userDto)) {
+    if (UsersController.isValidUserDto(userDto)) {
       bcrypt.hash(userDto.password, 10, async (err, hash) => {
         if (err) {
           res.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
         }
         const user = new UserModel(userDto.username, userDto.email, hash);
-        const result = await this.usersService.create(user)
+        await this.usersService.create(user)
           .then(value => {
               if (value.result.n === 1 && value.result.ok === 1) {
                 res.status(HttpStatus.OK)
@@ -42,7 +42,7 @@ export class UsersController {
     }
   }
 
-  private isValidUserDto(userDto: UserRegistrationDto) {
+  private static isValidUserDto(userDto: UserRegistrationDto) {
     if (userDto) {
       if (userDto.username) {
         if (userDto.username.length >= 3 && userDto.username.length <= 26) {

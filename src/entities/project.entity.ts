@@ -1,5 +1,7 @@
-import { Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm';
-import { Directory } from './directory.entity';
+import { Column, Entity, ObjectIdColumn } from 'typeorm';
+import { Directory } from './directory.sub';
+import { ObjectID } from 'mongodb';
+import { Label } from './label.sub';
 
 @Entity()
 export class Project {
@@ -11,10 +13,10 @@ export class Project {
   title: string;
 
   @Column()
-  ownerId: string;
+  ownerId: ObjectID;
 
   @Column()
-  memberIds: string[];
+  memberIds: ObjectID[];
 
   @Column()
   description: string;
@@ -24,4 +26,7 @@ export class Project {
 
   @Column()
   fileTree: Directory;
+
+  @Column()
+  labels: Label[];
 }

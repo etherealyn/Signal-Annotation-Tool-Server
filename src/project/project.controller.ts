@@ -16,8 +16,8 @@ import {
 import { ProjectService } from './project.service';
 import { Project } from '../entities/project.entity';
 import { AuthGuard } from '@nestjs/passport';
-import { Directory } from '../entities/directory.entity';
-import { File } from '../entities/file.entity';
+import { Directory } from '../entities/directory.sub';
+import { File } from '../entities/file.sub';
 import { createReadStream, Stats, statSync } from 'fs';
 import { Request, Response } from 'express';
 
@@ -46,17 +46,19 @@ export class ProjectController {
     project.description = body.description;
     project.modified = new Date();
     project.ownerId = req.user.id;
+    project.memberIds = [];
+    project.labels = [];
 
     project.fileTree = new Directory();
     project.fileTree.parent = null;
     project.fileTree.children = [];
 
-    // TODO: handle errors
     const response = await this.projectService.create(project);
     return { result: response.result, id: response.insertedId };
   }
 
   @Post('upload/:id')
+  @UseGuards(AuthGuard())
   @UseInterceptors(FilesInterceptor('file'))
   async uploadFile(@Param('id') id, @UploadedFiles() uploads: FileUpload[]) {
 
@@ -93,6 +95,7 @@ export class ProjectController {
   }
 
   @Get('files/:filename')
+  // @UseGuards(AuthGuard()) fixme
   file(@Req() req: Request, @Res() res: Response, @Param('filename') filename: string) {
     const path = `uploads/${filename}`;
     const stat: Stats = statSync(path);
