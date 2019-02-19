@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { AuthService } from './auth/auth.service';
 import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
+import { LabelsGateway } from './annotation/labels.gateway';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { AuthModule } from './auth/auth.module';
     }),
   ],
   controllers: [AppController, ProjectController, AuthController],
-  providers: [AppService, AuthService],
+  providers: [AppService, AuthService, LabelsGateway],
 })
 export class AppModule {
 }
