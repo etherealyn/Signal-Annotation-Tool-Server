@@ -87,7 +87,7 @@ export class ProjectController {
   @Get(':id')
   @UseGuards(AuthGuard())
   async findOne(@Param('id') id) {
-    const project = await this.projectService.findOne(id);
+    const project: Project = await this.projectService.findOne(id);
     project.fileTree.children.forEach(file => {
       delete file.path;
     });

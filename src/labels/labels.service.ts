@@ -39,4 +39,15 @@ export class LabelsService {
       }
     }
   }
+
+  async editLabel(projectId: string, index: number, name: string) {
+    await this.projectService.findOne(projectId, ['labels'])
+      .then(async (value) => {
+        const labels = value.labels;
+        if (labels && index < labels.length) {
+          labels[index].name = name;
+          await this.projectService.update(projectId, { labels });
+        }
+      });
+  }
 }
