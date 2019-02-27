@@ -1,7 +1,11 @@
-import { Column } from 'typeorm';
-import { Range } from './range.sub';
+import { Column} from 'typeorm';
+import { Range } from './range.entity';
+import { ObjectID } from 'mongodb';
 
 export class Label {
+  @Column()
+  id: string;
+
   @Column()
   name: string;
 

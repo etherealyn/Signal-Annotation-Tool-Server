@@ -31,7 +31,7 @@ export class AuthService {
         return {
           accessToken,
           user,
-          expiresIn: 3600,
+          expiresIn: 5 * 60 * 60,
         };
       }
     }

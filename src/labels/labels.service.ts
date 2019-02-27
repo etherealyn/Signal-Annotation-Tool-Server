@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { ProjectService } from '../project/project.service';
 import { ObjectID } from 'mongodb';
-import { Label } from '../entities/label.sub';
+import { Label } from '../entities/label.entity';
+import * as hyperid from 'hyperid';
 
 @Injectable()
 export class LabelsService {
-  constructor(private projectService: ProjectService) {
+  instance = hyperid();
 
+  constructor(
+    private projectService: ProjectService) {
   }
 
   async createLabel(authorId: ObjectID, projectId: ObjectID): Promise<true | false> {
@@ -14,9 +17,14 @@ export class LabelsService {
     if (!project.labels) {
       project.labels = [];
     }
-    const name = `Label ${project.labels.length + 1}`;
-    project.labels.push(new Label(name));
-    return await this.projectService.update(projectId, project).then(() => true, () => false);
+    const label = new Label(`Label ${project.labels.length + 1}`);
+    label.id = this.instance();
+    project.labels.push(label);
+    return await this.projectService
+      .update(projectId, project)
+      .then(() => true,
+        () => false,
+      );
   }
 
   async getLabels(projectId: string): Promise<Label[]> {

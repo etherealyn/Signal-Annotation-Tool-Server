@@ -1,7 +1,7 @@
 import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { LabelsService } from './labels.service';
 import { ObjectID } from 'mongodb';
-import { Label } from '../entities/label.sub';
+import { Label } from '../entities/label.entity';
 
 @WebSocketGateway({ origins: 'http://localhost:4200', namespace: 'labels' })
 export class LabelsGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {

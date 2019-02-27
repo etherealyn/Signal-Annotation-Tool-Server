@@ -1,7 +1,7 @@
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
 import { Directory } from './directory.sub';
 import { ObjectID } from 'mongodb';
-import { Label } from './label.sub';
+import { Label } from './label.entity';
 
 @Entity()
 export class Project {
