@@ -42,7 +42,7 @@ export class LabelsService {
         // const series = labels[index].series;
         // if (!series || series && series.length === 0) {
         //   console.log('delete label');
-        labels.splice(index);
+        labels.splice(index, 1);
         await this.projectService.update(projectId, { labels });
         // } else {
         //   console.log('cant delete');
