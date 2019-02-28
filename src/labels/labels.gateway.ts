@@ -21,7 +21,7 @@ export class LabelsGateway implements OnGatewayInit, OnGatewayConnection, OnGate
 
   @SubscribeMessage('editLabel')
   async editLabel(client, payload) {
-    await this.labelsService.editLabel(payload.projectId, payload.index, payload.name)
+    await this.labelsService.editLabel(payload.projectId, payload.labelId, payload.name)
       .then(async () => {
         await this.broadcastLabels(payload.projectId);
       });
@@ -29,7 +29,7 @@ export class LabelsGateway implements OnGatewayInit, OnGatewayConnection, OnGate
 
   @SubscribeMessage('deleteLabel')
   async deleteLabel(client, payload) {
-    await this.labelsService.deleteLabel(payload.projectId, payload.index)
+    await this.labelsService.deleteLabel(payload.projectId, payload.labelId)
       .then(async () => {
         await this.broadcastLabels(payload.projectId);
       });
@@ -43,6 +43,7 @@ export class LabelsGateway implements OnGatewayInit, OnGatewayConnection, OnGate
 
   async broadcastLabels(projectId: string) {
     const labels: Label[] = await this.labelsService.getLabels(projectId);
+    console.log(labels);
     this.server.emit('getLabels', { projectId, labels });
   }
 

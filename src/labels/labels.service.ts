@@ -3,6 +3,7 @@ import { ProjectService } from '../project/project.service';
 import { ObjectID } from 'mongodb';
 import { Label } from '../entities/label.entity';
 import * as hyperid from 'hyperid';
+import { UpdateResult } from 'typeorm';
 
 @Injectable()
 export class LabelsService {
@@ -32,30 +33,37 @@ export class LabelsService {
     return project.labels;
   }
 
-  async deleteLabel(projectId: string, index: number) {
+  async deleteLabel(projectId: string, labelId: string) {
     const project = await this.projectService.findOne(projectId, ['labels']);
-    if (project.labels && index < project.labels.length) {
-      const label = project.labels[index];
-
-      if (label) {
-        /** if there are no series in the label */
-        const force = false;
-        if (!label.series || label.series && label.series.length === 0 || force) {
-          project.labels.splice(index, 1);
-          await this.projectService.update(projectId, { labels: project.labels });
-        }
+    if (project && project.labels) {
+      const labels = project.labels;
+      const index = labels.findIndex(x => x.id === labelId);
+      if (index && 0 <= index) {
+        // const series = labels[index].series;
+        // if (!series || series && series.length === 0) {
+        //   console.log('delete label');
+        labels.splice(index);
+        await this.projectService.update(projectId, { labels });
+        // } else {
+        //   console.log('cant delete');
+        // todo can't delete labels with recorded ranges
+        // todo notify user
+        // }
       }
+
     }
   }
 
-  async editLabel(projectId: string, index: number, name: string) {
-    await this.projectService.findOne(projectId, ['labels'])
-      .then(async (value) => {
-        const labels = value.labels;
-        if (labels && index < labels.length) {
+  async editLabel(projectId: string, labelId: string, name: string): Promise<UpdateResult> {
+    return await this.projectService.findOne(projectId, ['labels'])
+      .then(async (project) => {
+        const labels = project.labels;
+        const index = labels.findIndex(x => x.id === labelId);
+        if (index !== -1) {
           labels[index].name = name;
-          await this.projectService.update(projectId, { labels });
+          return await this.projectService.update(projectId, { labels });
         }
       });
   }
 }
+
