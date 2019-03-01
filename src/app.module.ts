@@ -8,6 +8,8 @@ import { UsersModule } from './users/users.module';
 import { AuthService } from './auth/auth.service';
 import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
+import { LabelsGateway } from './labels/labels.gateway';
+import { LabelsModule } from './labels/labels.module';
 
 @Module({
   imports: [
@@ -18,9 +20,10 @@ import { AuthModule } from './auth/auth.module';
     MulterModule.register({
       dest: 'uploads/',
     }),
+    LabelsModule,
   ],
   controllers: [AppController, ProjectController, AuthController],
-  providers: [AppService, AuthService],
+  providers: [AppService, AuthService, LabelsGateway],
 })
 export class AppModule {
 }

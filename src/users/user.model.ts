@@ -1,5 +1,7 @@
 export class UserModel {
-  readonly username: string;
-  readonly password: string;
-  readonly email: string;
+  constructor(public username: string,
+              public email: string,
+              public password: string,
+  ) {
+  }
 }

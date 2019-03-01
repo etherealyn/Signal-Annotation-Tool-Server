@@ -1,7 +1,6 @@
-import { Entity, Tree, TreeChildren, TreeParent } from 'typeorm';
-import { File } from './file.entity';
+import { Tree, TreeChildren, TreeParent } from 'typeorm';
+import { File } from './file.sub';
 
-@Entity()
 @Tree('closure-table')
 export class Directory extends File {
 

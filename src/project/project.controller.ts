@@ -1,9 +1,25 @@
-import { Body, Controller, Delete, FilesInterceptor, Get, Param, Post, Put, Req, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  FilesInterceptor,
+  Get,
+  Param,
+  Post,
+  Put,
+  Req,
+  Res,
+  UploadedFiles,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { Project } from '../entities/project.entity';
 import { AuthGuard } from '@nestjs/passport';
-import { Directory } from '../entities/directory.entity';
-import { File } from '../entities/file.entity';
+import { Directory } from '../entities/directory.sub';
+import { File } from '../entities/file.sub';
+import { createReadStream, Stats, statSync } from 'fs';
+import { Request, Response } from 'express';
 
 interface FileUpload {
   readonly fieldname: string;
@@ -16,7 +32,7 @@ interface FileUpload {
   readonly size: number;
 }
 
-@Controller('api/projects')
+@Controller('api/project')
 export class ProjectController {
 
   constructor(private projectService: ProjectService) {
@@ -30,17 +46,19 @@ export class ProjectController {
     project.description = body.description;
     project.modified = new Date();
     project.ownerId = req.user.id;
+    project.memberIds = [];
+    project.labels = [];
 
     project.fileTree = new Directory();
     project.fileTree.parent = null;
     project.fileTree.children = [];
 
-    // TODO: handle errors
     const response = await this.projectService.create(project);
     return { result: response.result, id: response.insertedId };
   }
 
   @Post('upload/:id')
+  @UseGuards(AuthGuard())
   @UseInterceptors(FilesInterceptor('file'))
   async uploadFile(@Param('id') id, @UploadedFiles() uploads: FileUpload[]) {
 
@@ -48,7 +66,9 @@ export class ProjectController {
 
     uploads.forEach((upload: FileUpload) => {
       const file = new File();
+
       file.name = upload.originalname;
+      file.filename = upload.filename;
       file.path = upload.path;
       file.size = upload.size;
       file.mimetype = upload.mimetype;
@@ -58,24 +78,53 @@ export class ProjectController {
     return await this.projectService.update(project.id.toHexString(), project);
   }
 
-  @Get()
+  @Get('all/:ownerId')
   @UseGuards(AuthGuard())
-  async findAll(): Promise<Project[]> {
-    const fields:(keyof Project)[] = ['id', 'title', 'modified',
-      'memberIds', 'ownerId', 'description', ];
-    return await this.projectService.findAll(fields);
+  async findAll(@Param('ownerId') ownerId): Promise<Project[]> {
+    return await this.projectService.findAll(ownerId);
   }
 
   @Get(':id')
   @UseGuards(AuthGuard())
   async findOne(@Param('id') id) {
-    const project = await this.projectService.findOne(id);
-
+    const project: Project = await this.projectService.findOne(id);
     project.fileTree.children.forEach(file => {
       delete file.path;
     });
-
     return project;
+  }
+
+  @Get('files/:filename')
+  // @UseGuards(AuthGuard()) fixme
+  file(@Req() req: Request, @Res() res: Response, @Param('filename') filename: string) {
+    const path = `uploads/${filename}`;
+    const stat: Stats = statSync(path);
+    const fileSize = stat.size;
+    const range = req.headers.range;
+
+    if (range) {
+      const parts = range.replace(/bytes=/, '').split('-');
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+      const chunckSize = (end - start) + 1;
+      const file = createReadStream(path, {start, end});
+      const head = {
+        'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+        'Accept-Ranges': 'bytes',
+        'Content-Length': chunckSize,
+        'Content-Type': 'video/mp4', // fixme
+      };
+
+      res.writeHead(206, head);
+      file.pipe(res);
+    } else {
+      const head = {
+        'Content-Length': fileSize,
+        'Content-Type': 'video/mp4',
+      };
+      res.writeHead(200, head);
+      createReadStream(path).pipe(res);
+    }
   }
 
   @Put(':id')

@@ -1,4 +1,4 @@
-FROM node:10-alpine
+FROM node:10.15.2
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -10,8 +10,8 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-RUN npm run build-ts
+RUN npm run build
 
 EXPOSE 8080
 
-CMD [ "npm", "start" ]
+CMD [ "npm", "start:prod" ]

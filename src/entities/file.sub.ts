@@ -1,12 +1,11 @@
-import { Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm';
+import { Column } from 'typeorm';
 
-@Entity()
 export class File {
-  @ObjectIdColumn()
-  id: ObjectID;
-
   @Column()
   name: string;
+
+  @Column()
+  filename: string;
 
   @Column()
   path: string;
