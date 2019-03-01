@@ -4,7 +4,7 @@ import { ObjectID } from 'mongodb';
 import { Label } from '../entities/label.entity';
 
 @WebSocketGateway({ origins: 'http://localhost:4200', namespace: 'labels' })
-export class LabelsGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+export class LabelsGateway {
   @WebSocketServer() server;
 
   constructor(private labelsService: LabelsService) {
@@ -41,21 +41,18 @@ export class LabelsGateway implements OnGatewayInit, OnGatewayConnection, OnGate
     client.emit(labels);
   }
 
+  @SubscribeMessage('addRange')
+  async addRange(client, payload) {
+    await this.labelsService.addRange(payload.projectId, payload.labelId, payload.range);
+  }
+
+  @SubscribeMessage('removeRange')
+  async removeRange(client, payload) {
+    await this.labelsService.removeRange(payload.projectId, payload.labelId, payload.rangeId);
+  }
+
   async broadcastLabels(projectId: string) {
     const labels: Label[] = await this.labelsService.getLabels(projectId);
-    console.log(labels);
     this.server.emit('getLabels', { projectId, labels });
-  }
-
-  handleConnection(client, args: any[]): any {
-    console.log(`${client.id} connected`);
-  }
-
-  handleDisconnect(client): any {
-    console.log(`${client.id} disconnected`);
-  }
-
-  afterInit(server): any {
-    // console.log(server);
   }
 }

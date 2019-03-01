@@ -6,10 +6,10 @@ export class Range {
   id: string;
 
   @Column()
-  start: number;
+  startTime: number;
 
   @Column()
-  end: number;
+  endTime: number;
 
   @Column()
   authorId: ObjectID;

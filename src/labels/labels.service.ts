@@ -4,6 +4,14 @@ import { ObjectID } from 'mongodb';
 import { Label } from '../entities/label.entity';
 import * as hyperid from 'hyperid';
 import { UpdateResult } from 'typeorm';
+import { range } from 'rxjs';
+
+class Range {
+  id: string;
+  authorId: string;
+  startTime: number;
+  endTime: number;
+}
 
 @Injectable()
 export class LabelsService {
@@ -41,11 +49,9 @@ export class LabelsService {
       if (index && 0 <= index) {
         // const series = labels[index].series;
         // if (!series || series && series.length === 0) {
-        //   console.log('delete label');
         labels.splice(index, 1);
         await this.projectService.update(projectId, { labels });
         // } else {
-        //   console.log('cant delete');
         // todo can't delete labels with recorded ranges
         // todo notify user
         // }
@@ -64,6 +70,40 @@ export class LabelsService {
           return await this.projectService.update(projectId, { labels });
         }
       });
+  }
+
+  async addRange(projectId: string, labelId: string, range: Range) {
+    const project = await this.projectService.findOne(projectId, ['labels']);
+    if (project) {
+      const labels = project.labels;
+      const index = labels.findIndex(x => x.id === labelId);
+      if (index !== -1) {
+        if (!labels[index].series) {
+          labels[index].series = [];
+        }
+        labels[index].series.push(range);
+        await this.projectService.update(projectId, { labels });
+      }
+    }
+  }
+
+  async removeRange(projectId: string, labelId: string, rangeId: string) {
+    const project = await this.projectService.findOne(projectId, ['labels']);
+    if (project) {
+      const labels = project.labels;
+      if (labels) {
+        const i = labels.findIndex(x => x.id === labelId);
+        if (i !== -1) {
+          const j = labels[i].series.findIndex(x => {
+            return x.id === rangeId;
+          });
+          if (j !== -1) {
+            labels[i].series.splice(j, 1);
+            await this.projectService.update(projectId, { labels });
+          }
+        }
+      }
+    }
   }
 }
 

@@ -15,9 +15,10 @@ export class ProjectService {
   async findAll(userId: string): Promise<Project[]> {
     const y = ObjectID.createFromHexString(userId);
     const allProjects = await this.projectRepository.find();
-    return allProjects.filter(x => {
-      return x.ownerId.equals(y) || x.memberIds.find(value => y.equals(value));
-    });
+    // return allProjects.filter(x => {
+    //   return x.ownerId.equals(y) || x.memberIds.find(value => y.equals(value));
+    // });
+    return allProjects;
   }
 
   async create(project: Project) {
