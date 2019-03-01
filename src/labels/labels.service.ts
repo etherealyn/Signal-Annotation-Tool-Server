@@ -4,14 +4,7 @@ import { ObjectID } from 'mongodb';
 import { Label } from '../entities/label.entity';
 import * as hyperid from 'hyperid';
 import { UpdateResult } from 'typeorm';
-import { range } from 'rxjs';
-
-class Range {
-  id: string;
-  authorId: string;
-  startTime: number;
-  endTime: number;
-}
+import { Range } from './range';
 
 @Injectable()
 export class LabelsService {
