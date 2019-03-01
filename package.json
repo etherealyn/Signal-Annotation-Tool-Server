@@ -1,9 +1,13 @@
 {
   "name": "sat-server",
-  "version": "0.0.0",
+  "version": "1.0.0a",
   "description": "Signal Annotation Tool Backend",
   "author": "Aziret Satybaldiev",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/etherealyn/signal-annotation-tool-server.git"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "format": "prettier --write \"src/**/*.ts\"",
@@ -27,6 +31,7 @@
     "@nestjs/typeorm": "^5.3.0",
     "@nestjs/websockets": "^5.7.2",
     "bcrypt": "^3.0.4",
+    "hyperid": "^2.0.2",
     "mongodb": "^3.1.13",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
