@@ -48,7 +48,12 @@ export class LabelsGateway {
 
   @SubscribeMessage('removeRange')
   async removeRange(client, payload) {
-    await this.labelsService.removeRange(payload.projectId, payload.labelId, payload.rangeId);
+    await this.labelsService.removeRange(payload.projectId, payload.labelId, payload.rangeId)
+      .then((value => {
+        console.log('removeRange', 'fulfilled', value);
+      }), reason => {
+        console.log('removeRange', 'rejected', reason);
+      });
   }
 
   async broadcastLabels(projectId: string) {

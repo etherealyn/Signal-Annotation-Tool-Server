@@ -20,6 +20,7 @@ import { Directory } from '../entities/directory.sub';
 import { File } from '../entities/file.sub';
 import { createReadStream, Stats, statSync } from 'fs';
 import { Request, Response } from 'express';
+import * as csv from 'csv';
 
 interface FileUpload {
   readonly fieldname: string;
@@ -84,14 +85,41 @@ export class ProjectController {
     return await this.projectService.findAll(ownerId);
   }
 
+  @Get('labels/csv/:projecId')
+  @UseGuards(AuthGuard())
+  async getLabelsCsv(@Param('projectId') projectId, @Res() res) {
+    const project = await this.projectService.findOne(projectId, ['labels']);
+    const labels = project.labels;
+
+    if (labels) {
+      let responseCsv = 'labelName,startTime,endTime\n';
+
+      labels.forEach(label => {
+        if (label.series) {
+          label.series.forEach(range => {
+            responseCsv += `${label.name},${range.startTime},${range.endTime}\n`;
+          });
+        }
+      });
+
+      res.setHeader('Content-Disposition', 'attachment; filename="labels.csv"');
+      res.set('Access-Control-Expose-Headers', 'Content-Disposition');
+      res.set('Content-Type', 'text/csv');
+      res.status(200);
+      res.send(responseCsv);
+    }
+  }
+
   @Get(':id')
   @UseGuards(AuthGuard())
   async findOne(@Param('id') id) {
     const project: Project = await this.projectService.findOne(id);
-    project.fileTree.children.forEach(file => {
-      delete file.path;
-    });
-    return project;
+    if (project) {
+      project.fileTree.children.forEach(file => {
+        delete file.path;
+      });
+      return project;
+    }
   }
 
   @Get('files/:filename')
