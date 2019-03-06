@@ -1,5 +1,5 @@
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
-import { Directory } from './directory.sub';
+import { Directory } from './directory.entity';
 import { ObjectID } from 'mongodb';
 
 @Entity()

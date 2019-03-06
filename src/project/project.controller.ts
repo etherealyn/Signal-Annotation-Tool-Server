@@ -16,11 +16,10 @@ import {
 import { ProjectService } from './project.service';
 import { Project } from '../entities/project.entity';
 import { AuthGuard } from '@nestjs/passport';
-import { Directory } from '../entities/directory.sub';
-import { File } from '../entities/file.sub';
+import { Directory } from '../entities/directory.entity';
+import { File } from '../entities/file.entity';
 import { createReadStream, Stats, statSync } from 'fs';
 import { Request, Response } from 'express';
-import * as csv from 'csv';
 
 interface FileUpload {
   readonly fieldname: string;
@@ -33,7 +32,7 @@ interface FileUpload {
   readonly size: number;
 }
 
-@Controller('api/project')
+@Controller('project')
 export class ProjectController {
 
   constructor(private projectService: ProjectService) {
@@ -48,6 +47,7 @@ export class ProjectController {
     project.modified = new Date();
     project.ownerId = req.user.id;
     project.memberIds = [];
+    // project.labels = [];
 
     project.fileTree = new Directory();
     project.fileTree.parent = null;
@@ -61,7 +61,9 @@ export class ProjectController {
   @UseGuards(AuthGuard())
   @UseInterceptors(FilesInterceptor('file'))
   async uploadFile(@Param('id') id, @UploadedFiles() uploads: FileUpload[]) {
+
     const project = await this.projectService.findOne(id);
+
     uploads.forEach((upload: FileUpload) => {
       const file = new File();
 
@@ -82,41 +84,14 @@ export class ProjectController {
     return await this.projectService.findAll(ownerId);
   }
 
-  // @Get('labels/csv/:projectId')
-  // @UseGuards(AuthGuard())
-  // async getLabelsCsv(@Param('projectId') projectId, @Res() res) {
-  //   const project = await this.projectService.findOne(projectId, ['labels']);
-  //   const labels = project.labels;
-  //
-  //   if (labels) {
-  //     let responseCsv = 'labelName,startTime,endTime\n';
-  //
-  //     labels.forEach(label => {
-  //       if (label.series) {
-  //         label.series.forEach(range => {
-  //           responseCsv += `${label.name},${range.startTime},${range.endTime}\n`;
-  //         });
-  //       }
-  //     });
-  //
-  //     res.setHeader('Content-Disposition', 'attachment; filename="labels.csv"');
-  //     res.set('Access-Control-Expose-Headers', 'Content-Disposition');
-  //     res.set('Content-Type', 'text/csv');
-  //     res.status(200);
-  //     res.send(responseCsv);
-  //   }
-  // }
-
   @Get(':id')
   @UseGuards(AuthGuard())
   async findOne(@Param('id') id) {
     const project: Project = await this.projectService.findOne(id);
-    if (project) {
-      project.fileTree.children.forEach(file => {
-        delete file.path;
-      });
-      return project;
-    }
+    project.fileTree.children.forEach(file => {
+      delete file.path;
+    });
+    return project;
   }
 
   @Get('files/:filename')
@@ -132,7 +107,7 @@ export class ProjectController {
       const start = parseInt(parts[0], 10);
       const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
       const chunckSize = (end - start) + 1;
-      const file = createReadStream(path, { start, end });
+      const file = createReadStream(path, {start, end});
       const head = {
         'Content-Range': `bytes ${start}-${end}/${fileSize}`,
         'Accept-Ranges': 'bytes',
@@ -171,11 +146,5 @@ export class ProjectController {
   @UseGuards(AuthGuard())
   async delete(@Param('id') id) {
     return await this.projectService.delete(id);
-  }
-
-  @Delete('files/:projectID/:fileID')
-  @UseGuards(AuthGuard())
-  async deleteFile(@Param('projectID') projectID, @Param('fileID') fileID) {
-    await this.projectService.deleteFile(projectID, fileID);
   }
 }

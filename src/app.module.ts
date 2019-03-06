@@ -1,21 +1,15 @@
-import { Module, MulterModule } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ProjectModule } from './project/project.module';
-import { ProjectController } from './project/project.controller';
-import { UsersModule } from './users/users.module';
-import { AuthService } from './auth/auth.service';
-import { AuthController } from './auth/auth.controller';
-import { AuthModule } from './auth/auth.module';
-import { LabelsGateway } from './labels/labels.gateway';
-import { LabelsModule } from './labels/labels.module';
+import {Module, MulterModule} from '@nestjs/common';
+import {LabelsModule} from './labels/labels.module';
+import {AuthModule} from './auth/auth.module';
+import {TypeOrmModule} from '@nestjs/typeorm';
+import {ProjectModule} from './project/project.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
         type: 'mongodb',
         host: 'localhost',
+        port: 27017,
         database: 'satdb',
         synchronize: true,
         logging: false,
@@ -35,16 +29,13 @@ import { LabelsModule } from './labels/labels.module';
         },
       },
     ),
-    ProjectModule,
-    UsersModule,
     AuthModule,
+    ProjectModule,
+    LabelsModule,
     MulterModule.register({
       dest: 'uploads/',
     }),
-    LabelsModule,
   ],
-  controllers: [AppController, ProjectController, AuthController],
-  providers: [AppService, AuthService, LabelsGateway],
 })
-export class AppModule {
+export class ApplicationModule {
 }

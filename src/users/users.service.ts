@@ -1,11 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '../entities/user.entity';
-import { FindOneOptions, MongoRepository } from 'typeorm';
+import { MongoRepository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserModel } from './user.model';
-
-// import * as mongodb from 'mongodb';
-
 
 @Injectable()
 export class UsersService {
