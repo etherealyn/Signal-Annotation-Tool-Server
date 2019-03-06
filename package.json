@@ -5,9 +5,10 @@
   "author": "Aziret Satybaldiev",
   "license": "MIT",
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
     "webpack": "webpack --config webpack.config.js",
-    "start": "node dist/server.js",
     "prestart:prod": "rimraf dist && tsc",
+    "start": "node dist/server",
     "start:prod": "node dist/main.js"
   },
   "dependencies": {
