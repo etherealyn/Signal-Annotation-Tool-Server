@@ -1,9 +1,10 @@
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
 import { ObjectID } from 'mongodb';
 
+@Entity()
 export class Range {
-  @Column()
-  id: string;
+  @ObjectIdColumn()
+  id: ObjectID;
 
   @Column()
   startTime: number;

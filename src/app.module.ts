@@ -13,7 +13,28 @@ import { LabelsModule } from './labels/labels.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(),
+    TypeOrmModule.forRoot({
+        type: 'mongodb',
+        host: 'localhost',
+        database: 'satdb',
+        synchronize: true,
+        logging: false,
+        entities: [
+          __dirname + '/**/*.entity{.ts,.js}',
+        ],
+        subscribers: [
+          __dirname + '/**/*.entity{.ts,.js}',
+        ],
+        migrations: [
+          __dirname + '/**/*.entity{.ts,.js}',
+        ],
+        cli: {
+          entitiesDir: 'src/entity',
+          migrationsDir: 'src/migration',
+          subscribersDir: 'src/subscriber',
+        },
+      },
+    ),
     ProjectModule,
     UsersModule,
     AuthModule,

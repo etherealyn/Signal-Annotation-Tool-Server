@@ -1,7 +1,6 @@
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
 import { Directory } from './directory.sub';
 import { ObjectID } from 'mongodb';
-import { Label } from './label.entity';
 
 @Entity()
 export class Project {
@@ -26,7 +25,4 @@ export class Project {
 
   @Column()
   fileTree: Directory;
-
-  @Column()
-  labels: Label[];
 }
