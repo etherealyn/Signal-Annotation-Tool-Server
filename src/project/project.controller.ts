@@ -61,19 +61,20 @@ export class ProjectController {
   @UseGuards(AuthGuard())
   @UseInterceptors(FilesInterceptor('file'))
   async uploadFile(@Param('id') id, @UploadedFiles() uploads: FileUpload[]) {
-
     const project = await this.projectService.findOne(id);
-
     uploads.forEach((upload: FileUpload) => {
-      const file = new File();
+      console.log(upload);
+      if (upload.filename) {
+        const file = new File();
 
-      file.name = upload.originalname;
-      file.filename = upload.filename;
-      file.path = upload.path;
-      file.size = upload.size;
-      file.mimetype = upload.mimetype;
+        file.name = upload.originalname;
+        file.filename = upload.filename;
+        file.path = upload.path;
+        file.size = upload.size;
+        file.mimetype = upload.mimetype;
 
-      project.fileTree.children.push(file);
+        project.fileTree.children.push(file);
+      }
     });
     return await this.projectService.update(project.id.toHexString(), project);
   }

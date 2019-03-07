@@ -1,39 +1,29 @@
-import {Module, MulterModule} from '@nestjs/common';
-import {LabelsModule} from './labels/labels.module';
-import {AuthModule} from './auth/auth.module';
-import {TypeOrmModule} from '@nestjs/typeorm';
-import {ProjectModule} from './project/project.module';
+import { Module, MulterModule } from '@nestjs/common';
+import { LabelsModule } from './labels/labels.module';
+import { AuthModule } from './auth/auth.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ProjectModule } from './project/project.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
+     TypeOrmModule.forRoot({
         type: 'mongodb',
         host: 'localhost',
         port: 27017,
         database: 'satdb',
         synchronize: true,
-        logging: false,
+        logging: true,
         entities: [
-          __dirname + '/**/*.entity{.ts,.js}',
+          'dist/**/*.entity{.ts,.js}',
         ],
-        subscribers: [
-          __dirname + '/**/*.entity{.ts,.js}',
-        ],
-        migrations: [
-          __dirname + '/**/*.entity{.ts,.js}',
-        ],
-        cli: {
-          entitiesDir: 'src/entity',
-          migrationsDir: 'src/migration',
-          subscribersDir: 'src/subscriber',
-        },
       },
     ),
+    // TypeOrmModule.forRoot(),
     AuthModule,
     ProjectModule,
     LabelsModule,
     MulterModule.register({
-      dest: 'uploads/',
+      dest: './uploads/',
     }),
   ],
 })

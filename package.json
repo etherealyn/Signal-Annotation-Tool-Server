@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "webpack": "webpack --config webpack.config.js",
-    "prestart:prod": "rimraf dist && tsc",
+    "prestart:prod": "tsc",
     "start": "node dist/server",
     "start:prod": "node dist/main.js"
   },
@@ -34,6 +34,7 @@
   },
   "devDependencies": {
     "@types/node": "^7.10.5",
+    "@types/socket.io": "^2.1.2",
     "@types/ws": "^3.0.2",
     "ts-loader": "^5.3.3",
     "ts-node": "^6.2.0",

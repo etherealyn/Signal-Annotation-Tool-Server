@@ -11,10 +11,14 @@ export class Label {
   name: string;
 
   @Column()
-  series: Range[];
+  projectId: ObjectID;
 
-  constructor(name: string, series?: Range[]) {
+  @Column()
+  authorId: ObjectID;
+
+  constructor(projectId: ObjectID, authorId: ObjectID, name: string) {
+    this.projectId = projectId;
+    this.authorId = authorId;
     this.name = name;
-    this.series = series;
   }
 }
