@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DeleteResult, InsertResult, MongoRepository } from 'typeorm';
+import { DeleteResult, FindAndModifyWriteOpResultObject, InsertResult, MongoRepository, UpdateResult } from 'typeorm';
 import { Label } from '../entities/label.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -14,15 +14,15 @@ export class LabelsService {
     return await this.labelRepository.insert(label);
   }
 
-  async updateLabel(labelId: string) {
-    // return await this.labelRepository.findOneAndUpdate({ labelId }, );
+  async updateLabelName(labelId: string, change: string): Promise<UpdateResult> {
+    return await this.labelRepository.update(labelId, {name: change});
   }
 
-  async getLabels(projectId: string, select?:(keyof Label)[]): Promise<Label[]> {
+  async getLabels(projectId: string, select?: (keyof Label)[]): Promise<Label[]> {
     return await this.labelRepository
       .find({
-        select: select,
-        where: { projectId: projectId },
+        select,
+        where: { projectId },
       });
   }
 
@@ -35,6 +35,6 @@ export class LabelsService {
   }
 
   async deleteLabel(id: string): Promise<DeleteResult> {
-    return await this.labelRepository.delete(id)
+    return await this.labelRepository.delete(id);
   }
 }

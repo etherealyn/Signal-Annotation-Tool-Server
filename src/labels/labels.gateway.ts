@@ -4,7 +4,6 @@ import * as SocketIO from 'socket.io';
 import { InsertResult } from 'typeorm';
 import { Label } from '../entities/label.entity';
 
-
 @WebSocketGateway({
   origins: 'http://localhost:4200',
   namespace: 'labels',
@@ -71,5 +70,20 @@ export class LabelsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         socket.to(room).broadcast.emit('rem', { id: data.id });
         return false;
       }, () => true);
+  }
+
+  @SubscribeMessage('edit')
+  async edit(socket: SocketIO.Socket, data) {
+    const room = Object.keys(socket.rooms)[1];
+    const labelId = data.id;
+    const changeName = data.change;
+
+    return await this.labelsService.updateLabelName(labelId, changeName)
+      .then(() => {
+        socket.to(room).broadcast.emit('upd', { id: labelId, change: changeName});
+        return true;
+      }, () => {
+        return false;
+      });
   }
 }
