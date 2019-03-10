@@ -6,7 +6,7 @@ import { UserRegistrationDto } from '../dto/user.registration.dto';
 import { UserModel } from './user.model';
 import { Response } from 'express';
 
-@Controller('api/users')
+@Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {
   }
@@ -65,21 +65,5 @@ export class UsersController {
       }
     }
     return false;
-  }
-
-  @Get()
-  async findAll() {
-    const users = await this.usersService.findAll();
-
-    users.map((user: User) => {
-      delete user.password;
-    });
-
-    return users;
-  }
-
-  @Delete(':id')
-  async delete(@Param('id') email, @Res() res) {
-    return res.statusCode(HttpStatus.NOT_IMPLEMENTED);
   }
 }
