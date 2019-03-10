@@ -1,5 +1,5 @@
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
-import { Range } from './range.entity';
+import { Segment } from './segment.entity';
 import { ObjectID } from 'mongodb';
 
 @Entity()

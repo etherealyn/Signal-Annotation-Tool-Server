@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DeleteResult, FindAndModifyWriteOpResultObject, InsertResult, MongoRepository, UpdateResult } from 'typeorm';
+import { DeleteResult, InsertResult, MongoRepository, UpdateResult } from 'typeorm';
 import { Label } from '../entities/label.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 

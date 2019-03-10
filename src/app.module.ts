@@ -1,4 +1,4 @@
-import { Module, MulterModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { LabelsModule } from './labels/labels.module';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -7,11 +7,11 @@ import { UsersModule } from './users/users.module';
 import { Project } from './entities/project.entity';
 import { User } from './entities/user.entity';
 import { Label } from './entities/label.entity';
-import { Range } from './entities/range.entity';
+import { Segment } from './entities/segment.entity';
 
 @Module({
   imports: [
-     TypeOrmModule.forRoot({
+    TypeOrmModule.forRoot({
         type: 'mongodb',
         host: 'localhost',
         port: 27017,
@@ -19,7 +19,7 @@ import { Range } from './entities/range.entity';
         synchronize: true,
         logging: true,
         entities: [
-          Project, User, Label, Range,
+          Project, User, Label, Segment,
         ],
       },
     ),
