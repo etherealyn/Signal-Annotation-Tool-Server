@@ -1,9 +1,13 @@
-import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse } from '@nestjs/websockets';
 import { LabelsService } from './labels.service';
 import * as SocketIO from 'socket.io';
 import { InsertResult } from 'typeorm';
 import { Label } from '../entities/label.entity';
 import { SegmentService } from './segment/segment.service';
+import { from, Observable, of } from 'rxjs';
+import { flatMap, map, mergeAll } from 'rxjs/operators';
+import { Segment } from '../entities/segment.entity';
+import { ObjectID } from 'mongodb';
 
 @WebSocketGateway({ origins: 'http://localhost:4200', namespace: 'labels' })
 export class LabelsGateway {
@@ -44,12 +48,12 @@ export class LabelsGateway {
   @SubscribeMessage('getLabels')
   async getLabels(socket: SocketIO.Socket, data) {
     const room = Object.keys(socket.rooms)[1];
-    return await this.labelsService.getLabels(room, [ 'id', 'name' ]);
+    return await this.labelsService.getLabels(room, ['id', 'name']);
   }
 
   @SubscribeMessage('addLabel')
   async addLabel(socket: SocketIO.Socket, data) {
-    const room = Object.keys(socket.rooms)[1];
+    const room = LabelsGateway.getProjectRoom(socket);
     return await this.labelsService.createLabel(room, data.aid)
       .then(async (value: InsertResult) => {
         const id = value.identifiers[0].id;
@@ -61,7 +65,7 @@ export class LabelsGateway {
 
   @SubscribeMessage('deleteLabel')
   async deleteLabel(socket: SocketIO.Socket, data) {
-    const room = Object.keys(socket.rooms)[1];
+    const room = LabelsGateway.getProjectRoom(socket);
     return await this.labelsService.deleteLabel(data.id)
       .then(() => {
         socket.to(room).broadcast.emit('removedLabels', { id: data.id });
@@ -71,7 +75,7 @@ export class LabelsGateway {
 
   @SubscribeMessage('editLabel')
   async edit(socket: SocketIO.Socket, data) {
-    const room = Object.keys(socket.rooms)[1];
+    const room = LabelsGateway.getProjectRoom(socket);
     const labelId = data.id;
     const changeName = data.change;
 
@@ -83,10 +87,52 @@ export class LabelsGateway {
         return true;
       });
   }
+
   // endregion
 
   // region Segments
+  @SubscribeMessage('getSegments')
+  getSegments(socket: SocketIO.Socket, payload): Observable<WsResponse<Segment[]>> {
+    const ids: string[] = payload.ids;
+    return from(ids.map(id => this.segmentService.getSegments(id)))
+      .pipe(
+        mergeAll(),
+        map((data: Segment[]) => {
+          return ({ event: 'getSegments', data });
+        }),
+      );
+  }
 
+  @SubscribeMessage('addSegment')
+  async addSegment(socket: SocketIO.Socket, data) {
+    const room = LabelsGateway.getProjectRoom(socket);
+    const labelId = data.group;
+    const authorId = '';
+    const start = data.start;
+    const end = data.end;
+    const hyperid = data.hyperid;
+    return await this.segmentService
+      .createSegment(labelId, authorId, start, end)
+      .then(() => {
+        return false;
+      }, () => {
+        return true;
+      });
+  }
 
-  // region
+  @SubscribeMessage('deleteSegments')
+  async deleteSegments(socket: SocketIO.Socket, data) {
+    const room = LabelsGateway.getProjectRoom(socket);
+    const ids: string[] = data.items;
+    ids.forEach(async id =>
+      await this.segmentService.deleteSegment(id).then(value => {
+        return false;
+      });
+  }
+
+// region
+
+  private static getProjectRoom(socket: SocketIO.Socket) {
+    return Object.keys(socket.rooms)[1];
+  }
 }

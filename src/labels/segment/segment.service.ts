@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MongoRepository } from 'typeorm';
 import { Segment } from '../../entities/segment.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ObjectID } from 'mongodb';
 
 @Injectable()
 export class SegmentService {
@@ -22,7 +23,7 @@ export class SegmentService {
     return await this.segmentRepository.find({ where: { labelId } });
   }
 
-  async deleteSegment(segmentId: string) {
+  async deleteSegment(segmentId: ObjectID) {
     return await this.segmentRepository.delete(segmentId);
   }
 }
