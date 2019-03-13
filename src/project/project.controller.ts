@@ -63,7 +63,6 @@ export class ProjectController {
   async uploadFile(@Param('id') id, @UploadedFiles() uploads: FileUpload[]) {
     const project = await this.projectService.findOne(id);
     uploads.forEach((upload: FileUpload) => {
-      console.log(upload);
       if (upload.filename) {
         const file = new File();
 

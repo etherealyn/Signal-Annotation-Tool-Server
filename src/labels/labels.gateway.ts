@@ -127,7 +127,7 @@ export class LabelsGateway {
     ids.forEach(async id =>
       await this.segmentService.deleteSegment(id).then(value => {
         return false;
-      });
+      }));
   }
 
 // region
