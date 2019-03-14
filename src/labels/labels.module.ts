@@ -7,8 +7,9 @@ import { SegmentService } from './segment/segment.service';
 import { Segment } from '../entities/segment.entity';
 
 @Module({
-  imports: [ TypeOrmModule.forFeature([ Label, Segment ]) ],
-  providers: [ LabelsGateway, LabelsService, SegmentService ],
+  imports: [TypeOrmModule.forFeature([Label, Segment])],
+  providers: [LabelsGateway, LabelsService, SegmentService],
+  exports: [LabelsService, SegmentService],
 })
 export class LabelsModule {
 }
