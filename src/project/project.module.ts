@@ -4,6 +4,7 @@ import { Project } from '../entities/project.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProjectService } from './project.service';
 import { PassportModule } from '@nestjs/passport';
+import { LabelsModule } from '../labels/labels.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { PassportModule } from '@nestjs/passport';
     MulterModule.register({
       dest: 'uploads/',
     }),
+    LabelsModule,
   ],
   controllers: [ProjectController],
   providers: [ProjectService],

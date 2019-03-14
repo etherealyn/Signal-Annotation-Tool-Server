@@ -20,6 +20,13 @@ import { Directory } from '../entities/directory.entity';
 import { File } from '../entities/file.entity';
 import { createReadStream, Stats, statSync } from 'fs';
 import { Request, Response } from 'express';
+import * as moment from 'moment';
+import * as csvStringify from 'csv-stringify';
+import { LabelsService } from '../labels/labels.service';
+import { SegmentService } from '../labels/segment/segment.service';
+import { Label } from '../entities/label.entity';
+import { Segment } from '../entities/segment.entity';
+import { ObjectID } from 'mongodb';
 
 interface FileUpload {
   readonly fieldname: string;
@@ -35,7 +42,9 @@ interface FileUpload {
 @Controller('project')
 export class ProjectController {
 
-  constructor(private projectService: ProjectService) {
+  constructor(private projectService: ProjectService,
+              private labelsService: LabelsService,
+              private segmentsService: SegmentService) {
   }
 
   @Post()
@@ -107,7 +116,7 @@ export class ProjectController {
       const start = parseInt(parts[0], 10);
       const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
       const chunckSize = (end - start) + 1;
-      const file = createReadStream(path, {start, end});
+      const file = createReadStream(path, { start, end });
       const head = {
         'Content-Range': `bytes ${start}-${end}/${fileSize}`,
         'Accept-Ranges': 'bytes',
@@ -146,5 +155,27 @@ export class ProjectController {
   @UseGuards(AuthGuard())
   async delete(@Param('id') id) {
     return await this.projectService.delete(id);
+  }
+
+  @Get(':id/segments/csv')
+  async getSegments(@Param('id') projectId, @Res() res) {
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
+    res.setHeader('Content-Disposition', `attachment; filename="download-${moment()}.csv"`);
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Pragma', 'no-cache');
+
+    const labels: Label[] = await this.labelsService.getLabels(projectId, ['id', 'name']);
+    const labelledSegments: Segment[][] = await Promise.all(labels.map(x => this.segmentsService.getSegments(x.id.toHexString())));
+
+    const response = [];
+    const names = new Map<string, string>(labels.map((x: Label) => ([x.id.toHexString(), x.name] as [string, string])));
+    labelledSegments.forEach(segments => {
+        segments.forEach(segment =>
+          response.push({ name: names.get(segment.labelId), start: segment.start, end: segment.end }),
+        );
+      },
+    );
+    csvStringify(response, { header: true }).pipe(res);
   }
 }
