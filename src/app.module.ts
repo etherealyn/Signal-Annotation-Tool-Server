@@ -8,26 +8,15 @@ import { Project } from './entities/project.entity';
 import { User } from './entities/user.entity';
 import { Label } from './entities/label.entity';
 import { Segment } from './entities/segment.entity';
+import { config } from '../config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-        type: 'mongodb',
-        host: 'localhost',
-        port: 27017,
-        database: 'satdb',
-        synchronize: true,
-        logging: true,
-        entities: [
-          Project, User, Label, Segment,
-        ],
-      },
-    ),
+    TypeOrmModule.forRoot(config.typeOrmConfig),
     AuthModule,
     UsersModule,
     ProjectModule,
     LabelsModule,
-
   ],
 })
 export class ApplicationModule {
