@@ -1,16 +1,17 @@
-import { SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse } from '@nestjs/websockets';
+import { OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse } from '@nestjs/websockets';
 import { LabelsService } from './labels.service';
 import * as SocketIO from 'socket.io';
 import { InsertResult } from 'typeorm';
 import { Label } from '../entities/label.entity';
 import { SegmentService } from './segment/segment.service';
-import { from, Observable, of } from 'rxjs';
-import { flatMap, map, mergeAll } from 'rxjs/operators';
+import { from, Observable} from 'rxjs';
+import { map, mergeAll } from 'rxjs/operators';
 import { Segment } from '../entities/segment.entity';
 import { ObjectID } from 'mongodb';
+import { config } from '../../config';
 
-@WebSocketGateway({ origins: 'http://localhost:4200', namespace: 'labels' })
-export class LabelsGateway {
+@WebSocketGateway({ origins: config.origins, namespace: 'labels' })
+export class LabelsGateway  {
   @WebSocketServer() io: SocketIO.Server;
 
   constructor(private labelsService: LabelsService,

@@ -27,6 +27,7 @@ import { SegmentService } from '../labels/segment/segment.service';
 import { Label } from '../entities/label.entity';
 import { Segment } from '../entities/segment.entity';
 import { ObjectID } from 'mongodb';
+import { config } from '../../config';
 
 interface FileUpload {
   readonly fieldname: string;
@@ -106,7 +107,7 @@ export class ProjectController {
   @Get('files/:filename')
   // @UseGuards(AuthGuard()) fixme
   file(@Req() req: Request, @Res() res: Response, @Param('filename') filename: string) {
-    const path = `uploads/${filename}`;
+    const path = `${config.multerDest}/${filename}`;
     const stat: Stats = statSync(path);
     const fileSize = stat.size;
     const range = req.headers.range;

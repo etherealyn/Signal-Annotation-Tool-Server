@@ -1,18 +1,26 @@
 import { NestFactory } from '@nestjs/core';
 import { ApplicationModule } from './app.module';
+import { config } from '../config';
 
 declare const module: any;
 
-async function bootstrap() {
+const bootstrap = async () => {
   const app = await NestFactory.create(ApplicationModule);
 
-  app.enableCors({ origin: 'http://localhost:4200' });
+  app.enableCors({ origin: config.origins });
 
-  await app.listen(3000);
+  await app.listen(config.expressPort);
 
   if (module.hot) {
     module.hot.accept();
     module.hot.dispose(() => app.close());
   }
-}
-bootstrap();
+};
+
+bootstrap()
+  .then((() => {
+      console.log(config);
+    }),
+    (reason) => {
+      console.error(reason);
+    });
