@@ -9,7 +9,7 @@ const env = process.env;
 
 const expressPort: number = env.SAT_EXPRESS_PORT ? Number(env.SAT_EXPRESS_PORT) : 3000;
 const origins: string = env.SAT_CORS ? env.SAT_CORS : 'http://localhost:4200';
-const multerDest: string = env.SAT_MULTER_DEST ? env.SAT_MULTER_DEST : 'uploads/';
+const multerDest: string = env.SAT_MULTER_DEST ? env.SAT_MULTER_DEST : 'uploads';
 
 const databaseHost: string = env.SAT_DB_HOST ? env.SAT_DB_HOST : 'localhost';
 const databasePort: number = env.SAT_DB_PORT ? Number(env.SAT_DB_PORT) : 27017;
