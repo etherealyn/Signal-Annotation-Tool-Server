@@ -10,7 +10,7 @@ import { Segment } from '../entities/segment.entity';
 import { ObjectID } from 'mongodb';
 import { config } from '../../config';
 
-@WebSocketGateway({ origins: config.origins, namespace: 'labels' })
+@WebSocketGateway({ origins: '*:*', namespace: 'labels' })
 export class LabelsGateway  {
   @WebSocketServer() io: SocketIO.Server;
 
