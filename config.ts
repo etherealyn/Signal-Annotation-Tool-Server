@@ -7,15 +7,15 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 const env = process.env;
 
-const expressPort: number = env.SAT_EXPRESS_PORT ? Number(env.SAT_EXPRESS_PORT) : 3000;
-const origins: string = env.SAT_CORS ? env.SAT_CORS : 'http://localhost:4200';
-const multerDest: string = env.SAT_MULTER_DEST ? env.SAT_MULTER_DEST : 'uploads';
+const expressPort: number = env.EXPRESS_PORT ? Number(env.EXPRESS_PORT) : 3000;
+const origins: string = env.CORS ? env.CORS : 'http://localhost:4200';
+const multerDest: string = env.MULTER_DEST ? env.MULTER_DEST : 'uploads';
 
-const databaseHost: string = env.SAT_DB_HOST ? env.SAT_DB_HOST : 'localhost';
-const databasePort: number = env.SAT_DB_PORT ? Number(env.SAT_DB_PORT) : 27017;
-const databaseUsername: string = env.SAT_DB_USERNAME ? env.SAT_DB_USERNAME : '';
-const databasePassword: string = env.SAT_DB_PASSWORD ? env.SAT_DB_PASSWORD : '';
-const databaseName: string = env.SAT_DB_DATABASE ? env.SAT_DB_DATABASE : 'satdb';
+const databaseHost: string = env.DB_HOST ? env.DB_HOST : 'localhost';
+const databasePort: number = env.DB_PORT ? Number(env.DB_PORT) : 27017;
+const databaseUsername: string = env.DB_USERNAME ? env.DB_USERNAME : '';
+const databasePassword: string = env.DB_PASSWORD ? env.DB_PASSWORD : '';
+const databaseName: string = env.DB_NAME ? env.DB_NAME : 'satdb';
 
 const ormConfig: TypeOrmModuleOptions | MongoConnectionOptions = {
   type: 'mongodb',

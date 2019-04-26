@@ -19,7 +19,9 @@ const bootstrap = async () => {
 
 bootstrap()
   .then((() => {
+
       console.log(config);
+
     }),
     (reason) => {
       console.error(reason);
