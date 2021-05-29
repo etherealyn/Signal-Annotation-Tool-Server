@@ -31,7 +31,7 @@
     "rxjs": "^6.4.0",
     "typeorm": "^0.2.14",
     "typescript": "^3.3.3333",
-    "ws": "^6.2.0"
+    "ws": "^7.4.6"
   },
   "devDependencies": {
     "@types/node": "^11.10.5",
